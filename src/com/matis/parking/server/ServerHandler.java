@@ -35,16 +35,23 @@ public class ServerHandler implements HttpHandler {
             response = parkingController.delete(params);
         //UPDATE 
         } else if ("put".equalsIgnoreCase(exchange.getRequestMethod())) {
-            System.out.println(params);
             response = parkingController.update(params);
         } else {
             response = parkingController.notValidRequest();
         }
 
         exchange.sendResponseHeaders( response.getCode(), response.getMessage().length());
-        OutputStream os = exchange.getResponseBody();
-        os.write( response.getMessage().getBytes());
-        os.close();
+        
+        OutputStream os = null;
+        try {
+            os = exchange.getResponseBody();
+            os.write( response.getMessage().getBytes());
+        } finally {
+            if (os != null) {
+                os.close();    
+            }
+        }
+        
     }
 
 }
